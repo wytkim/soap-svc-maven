@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions 
+	targetNamespace="http://www.smband.com/countries" 
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+	xmlns:tns="http://www.smband.com/countries" 
+	>
+  <wsdl:types>
+    <xs:schema elementFormDefault="qualified" 
+    	targetNamespace="http://www.smband.com/countries" 
+    	xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="commonHeader" type="tns:commonHeader"/>
+	
+    <xs:element name="getCountryRequest">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element name="name" type="xs:string"/>
+    		</xs:sequence>
+    	</xs:complexType>
+    </xs:element>
+
+    <xs:element name="getCountryResponse">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element name="country" type="tns:country"/>
+    		</xs:sequence>
+    	</xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="country">
+    	<xs:sequence>
+    			<xs:element name="name" type="xs:string"/>
+    			<xs:element name="population" type="xs:int"/>
+    			<xs:element name="capital" type="xs:string"/>
+    			<xs:element name="currency" type="tns:currency"/>
+    	</xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="currency">
+    	<xs:restriction base="xs:string">
+    		<xs:enumeration value="GBP"/>
+            <xs:enumeration value="EUR"/>
+            <xs:enumeration value="PLN"/>
+    	</xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="commonHeader">
+    	<xs:all>
+    		<xs:element name="appName" type="xs:string"/>
+    		<xs:element name="svcName" type="xs:string"/>
+    		<xs:element maxOccurs="1" minOccurs="0" name="fnCd" type="xs:string"/>
+    	</xs:all>
+    </xs:complexType>
+    </xs:schema>
+  </wsdl:types>
+  
+  <wsdl:message name="getCountryRequest">
+  	<wsdl:part element="tns:getCountryRequest" name="countryRequest" />
+  </wsdl:message>
+  <wsdl:message name="getCountryResponse">
+  	<wsdl:part element="tns:getCountryResponse" name="countryResponse" />
+  </wsdl:message>
+
+	<wsdl:message name="commonHeader">
+		<wsdl:part name="commonHeader" element="tns:commonHeader" />
+	</wsdl:message>
+
+  <wsdl:portType name="CountriesPort">
+  	<wsdl:operation name="findCountry">
+  		<wsdl:input message="tns:getCountryRequest" />
+  		<wsdl:output message="tns:getCountryResponse" />
+  	</wsdl:operation>
+  </wsdl:portType>
+
+	<wsdl:binding name="countriesPortSoap12" type="tns:CountriesPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="findCountry">
+			<soap:operation soapAction="http://www.smband.com/countries/country"/>
+			<wsdl:input>
+				<soap:header use="literal" part="commonHeader" message="tns:commonHeader" />
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:header use="literal" part="commonHeader" message="tns:commonHeader" />
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	
+	<wsdl:service name="countriesPortService">
+		<wsdl:port name="countriesService" binding="tns:countriesPortSoap12">
+			<soap:address location="http://localhost:8081/ws"/>
+		</wsdl:port>
+	</wsdl:service>
+	
+</wsdl:definitions>
